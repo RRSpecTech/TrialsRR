@@ -1,0 +1,68 @@
+#include <avr/wdt.h> // Include the watchdog timer library for reset
+
+const int led1 = 3; // digitaalilähdön määritys
+const int led2 = 4; // digitaalilähdon määritys
+const int delayTime = 500; // 500 ms viive 1 Hz taajuudelle
+
+const int button1 = 5;
+const int button2 = 6;
+const int button3 = 7;
+const int button4 = 8;
+const int button5 = 9;
+const int button6 = 10;
+
+void setup() {
+  pinMode(led1, OUTPUT); // pin-mode määritys
+  pinMode(led2, OUTPUT); // pin-mode määritys
+
+  pinMode(button1, INPUT_PULLUP);
+  pinMode(button2, INPUT_PULLUP);
+  pinMode(button3, INPUT_PULLUP);
+  pinMode(button4, INPUT_PULLUP);
+  pinMode(button5, INPUT_PULLUP);
+  pinMode(button6, INPUT_PULLUP);
+
+  Serial.begin(9600);
+  while (!Serial);
+}
+
+void loop() {
+  if (digitalRead(button1) == LOW) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, LOW);
+  } else if (digitalRead(button2) == LOW) {
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, HIGH);
+  } else if (digitalRead(button3) == LOW) {
+    while (digitalRead(button3) == LOW) {
+      digitalWrite(led1, HIGH);
+      digitalWrite(led2, LOW);
+      delay(delayTime);
+      digitalWrite(led1, LOW);
+      digitalWrite(led2, HIGH);
+      delay(delayTime);
+    }
+  } else if (digitalRead(button4) == LOW) {
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(led1, HIGH);
+      delay(1000);
+      digitalWrite(led1, LOW);
+      delay(1000);
+    }
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(led2, HIGH);
+      delay(1000);
+      digitalWrite(led2, LOW);
+      delay(1000);
+    }
+    Serial.println("Test 4 successful, ready for next task");
+  } else if (digitalRead(button5) == LOW) {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+  } else if (digitalRead(button6) == LOW) {
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, LOW);
+    wdt_enable(WDTO_15MS); // Reset the Arduino
+    while (1) {} // Wait for the reset to occur
+  }
+}
